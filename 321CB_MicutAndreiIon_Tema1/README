@@ -1,0 +1,98 @@
+Nume: Micut Andrei-Ion
+Grupa: 321CB
+
+1. Problema bani
+    O problema de numarare pentru care am scris initial algoritmul urmator:
+pentru a forma un sir de i bancnote terminat cu bancnota de tip j, trebuie sa
+stim numarul de modalitati de a forma un sir de i - 1 bancnote de tip k, unde
+tipul k de bancnota permite adaugarea unei bancnote de tip j imediat dupa.
+Ne definim un set de reguli, care specifica tipul bancnotelor ce pot precede
+o bancnota de tipul i (vectorul rules), iar vectorul dp se va calcula astfel:
+dp[i][j] = sum(dp[i - 1][k]), unde k apartine setului de reguli pt bancnota
+de tip j. Se observa ca dp este influientat doar de linia precedenta, deci se
+pot pastra doar doua linii simultan (cum este exemplificat aici: 
+https://infoarena.ro/job_detail/608485?action=view-source).
+    Totusi, pentru setul de instructiuni de tip 1, acest algoritm nu este
+capabil sa se incadreze in timp din cauza dimensiunii N-ului. Dar se observa
+ca pentru acest set de instructiuni, valoarea rezultatului este dat de formula:
+(2 ^ (N - 1)) * nr_tipuri_bancnote % KMOD. Astfel, pentru tipul 1 de
+instructiuni este indeajuns sa calculam aceasta formula folosind ridicarea
+la putere in timp logaritmic.
+
+Complexitate: Pentru tipul 1 ridicarea la putere se face in O(logN), iar
+pentru tipul 2 rezulta o complexitate de O(N * k), unde k este o constanta,
+si reprezinta cate tipuri de bancnote exista. Astfel rezulta O(N) drept
+complexitate temporala. Complexitatea spatiala este data de marimea 
+vectorului dp pentru setul de instructiuni tip 2, si anume O(N), si O(1)
+in cazul setului de intructiuni 1.
+
+
+2. Problema gard
+    O problema cu intervale ce se rezolva prin tehnica greedy. Se sorteaza
+intervalele crescator dupa capatul stanga, iar in caz de egalitate se
+sorteaza descrescator dupa capatul dreapta al intervalului (astfel intervalele
+ce incep cu un oarecare xstart vor fi aranjate descrescator dupa marimea
+intervalului). Pe urma se parcurge lista cu intervalele sortate si se retin
+capetele intervalului curent ce nu este redundant (left si right in cod).
+Ne-am asigurat de la modul in care facem sortarea ca daca suntem la pasul
+i la un interval care nu este redundant, atunci nu poate sa fie inclus
+in niciun alt interval urmator. La fiecare bucata de gard ce nu a este
+redundanta se "actualizeaza" capetele intervalului non-redundant curent,
+care poate sa includa alte bucati de gard urmatoare.
+
+Complexitate: Sortarea in O(NlogN), iar parcurgerea se face in O(N) ==>
+complexiate temporala egala cu O(NlogN). Complexitatea spatiala este data de
+dimensiunea vectorului pentru intervale, si este egala cu O(N).
+
+
+3. Problema bomboane
+    O solutie brute-force la aceasta problema depaseste limita de timp propusa
+pentru cateva teste, asadar trebuie gasita o solutie ce implica programarea
+dinamica. Plecam de la o dinamica bidimensionala: dp[i][j] = numarul de moduri
+in care pot fi acordate j bomboane, insumanand numere din primele i intervale.
+Cazul de baza este dp[0][x0..y0] = 1, iar pentru restul cazurilor se foloseste
+formula dp[i][j] = dp[i - 1][j - yi] + ... dp[i - 1][j - xi]. Ce se intampla
+in aceasta insumare e faptul ca adunam numarul de moduri de a alcatui numarul
+k care apartine intervalului [j - y0, k - x0]. Acesta este intervalul pentru
+care putem obtine numere din intervalul i (sa le zicem l), astfel incat
+k + l == j. Fiind vorba de o suma pe interval ne dam seama ca putem folosi
+un vector in care salvam sumele partiale pentru a afla rapid suma din
+intervalul respectiv, si pe langa asta putem observa ca ne este utila doar
+linia precedenta in aceasta dinamica, asadar o putem reduce chiar la o dinamica
+unidimensionala (pe vector). In cele din urma dinamica ajunge sa fie urmatoarea:
+dp[j] = psum[j - x0] - psum[j - y0 - 1].
+Complexitate: Se parcurg intervalele si pentru fiecare interval se recalculeaza
+intreg vectorul dp, deci avem o complexitate de O(N * M). Complexitatea spatiala
+este egala cu O(M), data de marimile vectorului dp si pentru sume partiale (asta
+considerand ca M > N deobicei).
+
+
+4. Problema sala
+    Se deduce ca daca folosim o gantera cu greutatea minima gmin trebuie
+gasit un subset de gantere care au greutatea mai mare decat gmin, iar suma
+repetarilor este maxima.
+    Se ordoneaza crescator perechile de numere pentru gantere <greutate_i,
+repetari_i>, apoi se itereaza in ordine inversa prin aceste perechi. Folosim
+un multiset pentru a retine in ordine crescatoare numarul de repetari ale
+ganterelor pe care ne propunem sa le folosim. Daca nu am atins limita de M
+gantere, atunci o includem pe cea curenta si adunam numarul de repetari a
+acesteia la o suma globala. In cazul in care limita de gantere a fost atinsa,
+se inlocuieste gantera cu numarul de repetitari minim si mai mic decat
+numarul de repetari al ganterei candidate, daca exista asa ceva. Astfel,
+reusim sa maximizam numarul total de repetari. La fiecare schimbare de gantera
+se calculeaza suma ceruta si se retine maximul dintre acestea.
+
+Complexitate: Sortarea se realizeaza in O(NlogN), iar apoi se face o parcurgere
+a vectorului, folosindu-ne de multiset pentru a retine sortata o lista cu
+numere, care are complexitate O(logM) pentru insertie. Pentru un caz bine ales
+pot exista N inserari in acest multiset, deci aceasta parcurgere are o
+complexitate de O(NlogM) in cel mai rau caz. Rezulta complexitatea temporala de
+O(NlogN + NlogM), care se reduce mai departe la O(NlogN), avand in vedere ca
+M < N deobicei. Se foloseste doar vectorul cu perechile de numere ce descriu
+ganterele si un multiset, asadar complexitatea spatiala e egala cu O(N + M).
+
+
+5. Bibliografie:
+https://infoarena.ro/problema/lgput
+https://infoarena.ro/problema/rucsac
+https://ocw.cs.pub.ro/courses/pa/laboratoare/laborator-04
